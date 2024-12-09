@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Аптека</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+        .button-block {
+            margin-top: 20px; /* Увеличенный отступ сверху */
+        }
+    </style>
+</head>
+<body>
+<div class="bg-image" style="height: 100vh; overflow: auto">
+    <blockquote class="blockquote text-center"><h1>Информационно-справочная система аптеке</h1></blockquote>
+    <div class="row">
+        <div class="col-md-8 offset-md-4">
+            <form th:action="@{/}">
+                <input type="text" name="keyword" id="keyword" size="70" th:value="${keyword}" placeholder="Поиск" required/>
+                <input type="submit" class="btn btn-success btn-sm" value="Поиск"/>
+                <input type="button" class="btn btn-warning btn-sm" value="Очистить" id="btnClear"
+                       onclick="clearSearch()"/>
+            </form>
+        </div>
+    </div>
+
+    <!-- Кнопки "Добавить товар" и "Гистограмма" с увеличенным отступом -->
+    <div class="button-block">
+        <blockquote class="blockquote text-center">
+            <a href="/new">
+                <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
+                    Добавить товар
+                </button>
+            </a>
+        </blockquote>
+        <blockquote class="blockquote text-center">
+            <a href="/histogram">
+                <button type="button" class="btn btn-secondary">Гистограмма</button>
+            </a>
+        </blockquote>
+
+        <!-- Кнопка Панель администратора (с проверкой роли) -->
+        <blockquote class="blockquote text-center">
+            <a href="/users" id="usersButton">
+                <button type="button" class="btn btn-warning">Панель администратора</button>
+            </a>
+        </blockquote>
+
+        <blockquote class="blockquote text-center">
+            <form action="/logout" method="post">
+                <button type="submit" class="btn btn-danger">Выйти</button>
+            </form>
+        </blockquote>
+    </div>
+
+    <div>
+        Среднее количество товаров в день: <span th:text="${#numbers.formatDecimal(averageProductCount, 1, 2)}"></span>
+    </div>
+
+    <!-- Окно с количеством товаров по дням -->
+    <div class="product-count-window" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
+        <h5>Количество товаров по дням</h5>
+        <ul style="list-style-type: none; padding-left: 0;">
+            <li th:each="entry : ${productsByDayList}">
+                <span th:text="${T(java.time.format.DateTimeFormatter).ofPattern('dd.MM.yyyy').format(entry.key)}">Дата</span>:
+                <span th:text="${entry.value}">Количество</span> товаров
+            </li>
+        </ul>
+    </div>
+
+    <!-- Количество товаров -->
+    <p class="text-dark" id="productCount" style="margin-top: 20px;">
+        Количество товаров в таблице: <span th:text="${productCount}">11</span>
+    </p>
+
+    <table id="productTable" class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th scope="col" class="sortable" data-field="id">ID товара</th>
+            <th scope="col" class="sortable" data-field="category">Категория</th>
+            <th scope="col" class="sortable" data-field="name">Название</th>
+            <th scope="col" class="sortable" data-field="manufacturer">Производитель</th>
+            <th scope="col" class="sortable" data-field="quantity">В наличии</th>
+            <th scope="col" class="sortable" data-field="price">Цена</th>
+            <th scope="col" class="sortable" data-field="deliveryDate">Дата поставки</th>
+            <th scope="col">Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${listProduct}">
+            <th scope="row" class="text-dark" th:text="${product.id}">ID товара отсутствует</th>
+            <td class="text-dark" th:text="${product.category}">Категория отсутствует</td>
+            <td class="text-dark" th:text="${product.name}">Название отсутствует</td>
+            <td class="text-dark" th:text="${product.manufacturer}">Производитель отсутствует</td>
+            <td class="text-dark" th:text="${product.quantity}">Количество отсутствует</td>
+            <td class="text-dark" th:text="${product.price}">Цена отсутствует</td>
+            <td class="text-dark" th:text="${product.deliveryDate}">Дата поставки отсутствует</td>
+            <td>
+                <a th:href="@{'/edit/'+${product.id}}"><button type="button" class="btn btn-info">Редактировать</button></a>
+                <a th:href="@{'/delete/'+${product.id}}"><button type="button" class="btn btn-danger">Удалить</button></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    function clearSearch() {
+        window.location = "[[@{/}]]";
+    }
+
+    // Сортировка таблицы
+    document.addEventListener('DOMContentLoaded', function () {
+        const table = document.getElementById('productTable');
+        const headers = table.querySelectorAll('th.sortable');
+        const tbody = table.querySelector('tbody');
+
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const field = header.dataset.field;
+                const rows = Array.from(tbody.rows);
+
+                const isAscending = header.classList.contains('ascending');
+                header.classList.toggle('ascending', !isAscending);
+                header.classList.toggle('descending', isAscending);
+
+                rows.sort((a, b) => {
+                    const aText = a.querySelector(`td:nth-child(${Array.from(headers).indexOf(header) + 1})`).textContent;
+                    const bText = b.querySelector(`td:nth-child(${Array.from(headers).indexOf(header) + 1})`).textContent;
+
+                    if (isNaN(aText) && isNaN(bText)) {
+                        return isAscending ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                    }
+                    return isAscending ? aText - bText : bText - aText;
+                });
+
+                rows.forEach(row => tbody.appendChild(row)); // Добавляем отсортированные строки обратно в tbody
+            });
+        });
+
+        // Подсчёт количества строк таблицы
+        function getRowsColumn() {
+            let table = document.getElementById('productTable');
+            let tBody = table.querySelector('tbody');
+            const count = tBody.querySelectorAll('tr').length;
+            document.getElementById('productCount').innerHTML = 'Количество товаров в таблице: ' + count;
+        }
+
+        // Вызываем функцию после полной загрузки страницы
+        getRowsColumn();
+    });
+
+    // Функция для получения текущего пользователя с сервера
+    async function getCurrentUser() {
+        const response = await fetch('/api/users/current');
+        if (response.ok) {
+            const user = await response.json();
+            return user;
+        }
+        return null;
+    }
+
+    // Функция для проверки роли и скрытия кнопки "Панель администратора"
+    async function checkUserRoles() {
+        const user = await getCurrentUser();
+        if (user && user.roles && !user.roles.some(role => role.name === 'ROLE_ADMIN')) {
+            const usersButton = document.getElementById('usersButton');
+            if (usersButton) {
+                usersButton.style.display = 'none';
+            }
+        }
+    }
+
+    // Вызов функции после загрузки страницы
+    window.onload = checkUserRoles;
+</script>
+</body>
+</html>
+
+
