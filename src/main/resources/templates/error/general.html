@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка - Неизвестная ошибка</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Стили (если нужно) -->
+</head>
+<body>
+<div class="error-container">
+    <div class="alert alert-warning" role="alert">
+        <strong>Неизвестная ошибка!</strong> Произошла неизвестная ошибка.
+    </div>
+    <a href="/" class="btn">Вернуться на главную</a> <!-- Кнопка для перехода на главную страницу -->
+</div>
+
+<script>
+    // Показываем уведомление с задержкой
+    window.onload = function() {
+        setTimeout(function() {
+            alert("Произошла неизвестная ошибка.");
+        }, 500);
+    };
+</script>
+</body>
+</html>

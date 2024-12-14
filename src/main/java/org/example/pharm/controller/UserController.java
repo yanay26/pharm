@@ -78,17 +78,5 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-//    @PostMapping("/assignRole/{userId}")
-//    public ResponseEntity<String> assignRole(@PathVariable Long userId) {
-//        try {
-//            userService.assignRoleToAdmin(userId); // Обновляем роль пользователя
-//            return ResponseEntity.ok("Роль пользователя обновлена на ROLE_ADMIN"); // Статус успеха
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ошибка при обновлении роли"); // Статус ошибки
-//        }
-//    }
-
-
 }
-
 

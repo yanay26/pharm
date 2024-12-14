@@ -12,11 +12,48 @@
         .button-block {
             margin-top: 20px; /* Увеличенный отступ сверху */
         }
+
+        .nav {
+            background-color: #f8f9fa;
+            padding: 10px;
+        }
+        .nav .nav-link {
+            color: #007bff;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        .nav .nav-link:hover {
+            text-decoration: underline;
+        }
     </style>
+
 </head>
 <body>
 <div class="bg-image" style="height: 100vh; overflow: auto">
-    <blockquote class="blockquote text-center"><h1>Информационно-справочная система аптеке</h1></blockquote>
+
+    <!-- Навигационное меню -->
+    <nav>
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/author">Об авторе</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Контейнер для кнопок -->
+    <div class="d-flex justify-content-center align-items-center p-3">
+        <!-- Кнопка Панель администратора -->
+        <a href="/users" id="usersButton" class="me-2">
+            <button type="button" class="btn btn-warning">Панель администратора</button>
+        </a>
+
+        <!-- Кнопка Выйти -->
+        <form action="/logout" method="post" class="m-0">
+            <button type="submit" class="btn btn-danger">Выйти</button>
+        </form>
+    </div>
+
+    <blockquote class="blockquote text-center mt-4"><h1>Информационно-справочная система аптеке</h1></blockquote>
     <div class="row">
         <div class="col-md-8 offset-md-4">
             <form th:action="@{/}">
@@ -42,35 +79,6 @@
                 <button type="button" class="btn btn-secondary">Гистограмма</button>
             </a>
         </blockquote>
-
-        <!-- Кнопка Панель администратора (с проверкой роли) -->
-        <blockquote class="blockquote text-center">
-            <a href="/users" id="usersButton">
-                <button type="button" class="btn btn-warning">Панель администратора</button>
-            </a>
-        </blockquote>
-
-        <blockquote class="blockquote text-center">
-            <form action="/logout" method="post">
-                <button type="submit" class="btn btn-danger">Выйти</button>
-            </form>
-        </blockquote>
-    </div>
-
-    <div>
-        Среднее количество товаров в день: <span th:text="${#numbers.formatDecimal(averageProductCount, 1, 2)}"></span>
-    </div>
-
-    <!-- Окно с количеством товаров по дням -->
-    <div class="product-count-window" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
-        <h5>Количество товаров по дням</h5>
-        <ul style="list-style-type: none; padding-left: 0;">
-            <li th:each="entry : ${productsByDayList}">
-                <span th:text="${T(java.time.format.DateTimeFormatter).ofPattern('dd.MM.yyyy').format(entry.key)}">Дата</span>:
-                <span th:text="${entry.value}">Количество</span> товаров
-            </li>
-        </ul>
-    </div>
 
     <!-- Количество товаров -->
     <p class="text-dark" id="productCount" style="margin-top: 20px;">

@@ -71,19 +71,26 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Отключение CSRF для упрощения
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login").permitAll() // Страницы входа и регистрации доступны всем
-                        .requestMatchers("/users").hasRole("ADMIN") // Доступ к странице /users только для ADMIN
+                        .requestMatchers("/css/**", "/js/**","/register", "/login").permitAll() // Страницы входа и регистрации доступны всем
+                        .requestMatchers("/users", "/histogram/data").hasRole("ADMIN") // Доступ к странице /users только для ADMIN
                         .anyRequest().authenticated() // Остальные страницы требуют аутентификации
                 )
                 .formLogin(form -> form
                         .loginPage("/login") // Кастомная страница логина
-                        .successHandler(customAuthenticationSuccessHandler()) // Обработчик успешного входа
+                        //.successHandler(customAuthenticationSuccessHandler()) // Обработчик успешного входа
+                        .defaultSuccessUrl("/") // Перенаправление при успешном входе
+                        .failureUrl("/login?error=true") // Перенаправление при ошибке входа
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login") // Перенаправление на логин после выхода
+                        .logoutSuccessUrl("/login?logout=true") // Перенаправление на логин после выхода
                         .permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/403"); // Редирект на главную страницу при ошибке доступа
+                        })
                 );
         return http.build();
     }

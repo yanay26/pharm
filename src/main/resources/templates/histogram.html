@@ -12,70 +12,78 @@
             height: 500px;
             margin: 0 auto;
         }
+
+        .center-btn {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 <div class="container mt-4">
     <!-- Кнопка для возврата на главную -->
-    <div class="d-flex justify-content-end mb-3">
+    <div class="center-btn">
         <a th:href="@{/}" class="btn btn-primary">
-            <i class="fas fa-home"></i> Вернуться на главную
+            <i class="fas fa-home"></i> На главную
         </a>
     </div>
 
-<blockquote class="blockquote text-center"><h1>Гистограмма количества товаров по дате поставки</h1></blockquote>
-<canvas id="productChart"></canvas>
+    <blockquote class="blockquote text-center"><h1>Гистограмма количества товаров по дате поставки</h1></blockquote>
 
-<script>
-    async function fetchProductCount() {
-        try {
-            const response = await fetch('/histogram/data'); // Путь к API для данных
-            const productCount = await response.json();
+    <canvas id="productChart"></canvas>
 
-            console.log(productCount); // Проверка полученных данных
+    <script>
+        async function fetchProductCount() {
+            try {
+                const response = await fetch('/api/products/histogram/data'); // Путь к API для данных
+                const productCount = await response.json();
 
-            const labels = [];
-            const dataCount = [];
+                console.log(productCount); // Проверка полученных данных
 
-            const today = new Date();
-            for (let i = 13; i >= 0; i--) { // Диапазон 14 дней
-                const date = new Date(today);
-                date.setDate(today.getDate() - i);
-                const dateString = date.toISOString().split('T')[0]; // Получаем формат YYYY-MM-DD
-                labels.push(dateString);
-                dataCount.push(productCount[dateString] || 0); // Используем 0, если товаров не было в этот день
-            }
+                const labels = [];
+                const dataCount = [];
 
-            console.log("Labels:", labels); // Проверка меток
-            console.log("Data Count:", dataCount); // Проверка значений
+                const today = new Date();
+                for (let i = 13; i >= 0; i--) { // Диапазон 14 дней
+                    const date = new Date(today);
+                    date.setDate(today.getDate() - i);
+                    const dateString = date.toISOString().split('T')[0]; // Получаем формат YYYY-MM-DD
+                    labels.push(dateString);
+                    dataCount.push(productCount[dateString] || 0); // Используем 0, если товаров не было в этот день
+                }
 
-            const ctx = document.getElementById('productChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Количество товаров',
-                        data: dataCount, // Используем массив с данными
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+                console.log("Labels:", labels); // Проверка меток
+                console.log("Data Count:", dataCount); // Проверка значений
+
+                const ctx = document.getElementById('productChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Количество товаров',
+                            data: dataCount, // Используем массив с данными
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
-                }
-            });
-        } catch (error) {
-            console.error('Ошибка при получении данных:', error);
+                });
+            } catch (error) {
+                console.error('Ошибка при получении данных:', error);
+            }
         }
-    }
 
-    fetchProductCount(); // Запускаем функцию
-</script>
+        fetchProductCount(); // Запускаем функцию
+    </script>
+</div>
 </body>
 </html>

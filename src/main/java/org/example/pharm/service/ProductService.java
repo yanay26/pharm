@@ -75,9 +75,9 @@ public class ProductService {
     }
 
     // Получение средней стоимости запасов продуктов
-    public BigDecimal getAverageStockValue() {
-        return repo.calculateAverageStockValue();
-    }
+    //public BigDecimal getAverageStockValue() {
+    //    return repo.calculateAverageStockValue();
+    //}
 }
 
 

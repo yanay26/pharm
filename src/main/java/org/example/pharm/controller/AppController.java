@@ -85,12 +85,6 @@ public class AppController {
         return "histogram"; // Страница с гистограммой
     }
 
-    // Получение данных для гистограммы (по дням)
-    @GetMapping("/histogram/data")
-    @ResponseBody
-    public Map<LocalDate, Long> getHistogramData() {
-        return productService.getProductsCountByDeliveryDate();
-    }
 
     // Страница регистрации нового пользователя
     @RequestMapping("/register")
@@ -116,6 +110,19 @@ public class AppController {
         return "login"; // Шаблон страницы логина
     }
 
+    @GetMapping("/login")
+    public String login(@RequestParam(value = "error", required = false) String error,
+                        @RequestParam(value = "logout", required = false) String logout,
+                        Model model) {
+        if (error != null) {
+            model.addAttribute("errorMessage", "Неверные имя пользователя или пароль");
+        }
+        if (logout != null) {
+            model.addAttribute("logoutMessage", "Вы успешно вышли из системы");
+        }
+        return "login";
+    }
+
     // Маршрут для страницы пользователей, доступный только администраторам
     @GetMapping("/users")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -137,7 +144,13 @@ public class AppController {
         return "redirect:/users"; // Перенаправляем на страницу с пользователями
     }
 
+    @GetMapping("/author")
+    public String aboutPage() {
+        return "author";
+    }
+
 }
+
 
 
 
