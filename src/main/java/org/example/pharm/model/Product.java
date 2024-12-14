@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ public class Product {
 
     private Long id; // ID продукта
     private String name; // Название продукта
-    private String category; // Категория продукта
+    private Category category; // Категория продукта (ссылка на объект категории)
     private String manufacturer; // Производитель
     private BigDecimal price; // Цена продукта
     private Integer quantity; // Количество на складе
@@ -72,7 +73,8 @@ public class Product {
      *
      * @return Категория продукта
      */
-    public String getCategory() {
+    @ManyToOne
+    public Category getCategory() {
         return category;
     }
 
@@ -81,7 +83,7 @@ public class Product {
      *
      * @param category Категория продукта
      */
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
@@ -166,13 +168,14 @@ public class Product {
     public String toString() {
         return "Product [id=" + id +
                 ", name=" + name +
-                ", category=" + category +
+                ", category=" + (category != null ? category.getName() : "N/A") +
                 ", manufacturer=" + manufacturer +
                 ", price=" + price +
                 ", quantity=" + quantity +
                 ", deliveryDate=" + deliveryDate + "]";
     }
 }
+
 
 
 

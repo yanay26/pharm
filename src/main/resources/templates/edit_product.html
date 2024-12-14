@@ -29,12 +29,19 @@
           <td>ID товара:</td>
           <td><input type="text" th:field="*{id}" readonly="readonly" class="form-control"></td>
         </tr>
+        <!-- Категория: изменяем на выпадающий список -->
         <tr class="form-group">
           <td>Категория:</td>
-          <td><input type="text" th:field="*{category}" class="form-control" required></td>
+          <td>
+            <select th:field="*{category.id}" class="form-control" required>
+              <option th:each="category : ${categories}"
+                      th:value="${category.id}"
+                      th:text="${category.name}"></option>
+            </select>
+          </td>
         </tr>
         <tr class="form-group">
-          <td>Название лекарства:</td>
+          <td>Название товара:</td>
           <td><input type="text" th:field="*{name}" class="form-control" required></td>
         </tr>
         <tr class="form-group">
@@ -47,7 +54,7 @@
         </tr>
         <tr class="form-group">
           <td>Цена:</td>
-          <td><input type="text" th:field="*{price}" class="form-control" required></td>
+          <td><input type="number" step="0.01" th:field="*{price}" class="form-control" required></td>
         </tr>
         <tr class="form-group">
           <td>Дата поставки:</td>
@@ -55,7 +62,7 @@
         </tr>
         <tr>
           <td colspan="2">
-            <button type="submit" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Сохранить</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
           </td>
         </tr>
       </table>

@@ -20,7 +20,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * @param keyword ключевое слово для поиска продуктов
      * @return список продуктов, которые содержат указанное ключевое слово в одном из полей
      */
-    @Query("SELECT p FROM Product p WHERE CONCAT(p.name, ' ', p.category, ' ', p.manufacturer, ' ', p.deliveryDate) LIKE %?1%")
+    @Query("SELECT p FROM Product p WHERE CONCAT(p.name, ' ', p.category.name, ' ', p.manufacturer, ' ', p.deliveryDate) LIKE %?1%")
     List<Product> search(String keyword);
 
 }

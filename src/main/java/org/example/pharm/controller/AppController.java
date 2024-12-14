@@ -1,7 +1,9 @@
 package org.example.pharm.controller;
 
+import org.example.pharm.model.Category;
 import org.example.pharm.model.Product;
 import org.example.pharm.model.User;
+import org.example.pharm.service.CategoryService;
 import org.example.pharm.service.UserService;
 import org.example.pharm.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class AppController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     /**
      * Отображает главную страницу с продуктами.
      * Также фильтрует продукты по ключевому слову и отображает их на странице.
@@ -55,6 +60,7 @@ public class AppController {
     public String showNewProductForm(Model model) {
         Product product = new Product();
         model.addAttribute("product", product);
+        model.addAttribute("categories", categoryService.getAllCategories()); // Передаем все категории в модель
         return "new_product"; // Форма для добавления нового продукта
     }
 
@@ -81,6 +87,7 @@ public class AppController {
         ModelAndView mav = new ModelAndView("edit_product");
         Product product = productService.get(id);
         mav.addObject("product", product);
+        mav.addObject("categories", categoryService.getAllCategories()); // Передаем все категории в модель
         return mav;
     }
 
@@ -217,3 +224,4 @@ public class AppController {
     }
 
 }
+

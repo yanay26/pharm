@@ -26,7 +26,6 @@
             text-decoration: underline;
         }
     </style>
-
 </head>
 <body>
 <div class="bg-image" style="height: 100vh; overflow: auto">
@@ -36,6 +35,9 @@
         <ul class="nav">
             <li class="nav-item">
                 <a class="nav-link" href="/author">Об авторе</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/categories">Категории</a>
             </li>
         </ul>
     </nav>
@@ -56,11 +58,11 @@
     <blockquote class="blockquote text-center mt-4"><h1>Информационно-справочная система аптеки</h1></blockquote>
     <div class="row">
         <div class="col-md-8 offset-md-4">
-            <form th:action="@{/}">
+            <form th:action="@{/}" method="get">
+                <!-- Поле для поиска по ключевому слову -->
                 <input type="text" name="keyword" id="keyword" size="70" th:value="${keyword}" placeholder="Поиск" required/>
                 <input type="submit" class="btn btn-success btn-sm" value="Поиск"/>
-                <input type="button" class="btn btn-warning btn-sm" value="Очистить" id="btnClear"
-                       onclick="clearSearch()"/>
+                <input type="button" class="btn btn-warning btn-sm" value="Очистить" id="btnClear" onclick="clearSearch()"/>
             </form>
         </div>
     </div>
@@ -80,113 +82,114 @@
             </a>
         </blockquote>
 
-    <!-- Количество товаров -->
-    <p class="text-dark" id="productCount" style="margin-top: 20px;">
-        Количество товаров в таблице: <span th:text="${productCount}">11</span>
-    </p>
+        <!-- Количество товаров -->
+        <p class="text-dark" id="productCount" style="margin-top: 20px;">
+            Количество товаров в таблице: <span th:text="${productCount}">11</span>
+        </p>
 
-    <table id="productTable" class="table table-striped table-hover">
-        <thead>
-        <tr>
-            <th scope="col" class="sortable" data-field="id">ID товара</th>
-            <th scope="col" class="sortable" data-field="category">Категория</th>
-            <th scope="col" class="sortable" data-field="name">Название</th>
-            <th scope="col" class="sortable" data-field="manufacturer">Производитель</th>
-            <th scope="col" class="sortable" data-field="quantity">В наличии</th>
-            <th scope="col" class="sortable" data-field="price">Цена</th>
-            <th scope="col" class="sortable" data-field="deliveryDate">Дата поставки</th>
-            <th scope="col">Действия</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="product : ${listProduct}">
-            <th scope="row" class="text-dark" th:text="${product.id}">ID товара отсутствует</th>
-            <td class="text-dark" th:text="${product.category}">Категория отсутствует</td>
-            <td class="text-dark" th:text="${product.name}">Название отсутствует</td>
-            <td class="text-dark" th:text="${product.manufacturer}">Производитель отсутствует</td>
-            <td class="text-dark" th:text="${product.quantity}">Количество отсутствует</td>
-            <td class="text-dark" th:text="${product.price}">Цена отсутствует</td>
-            <td class="text-dark" th:text="${product.deliveryDate}">Дата поставки отсутствует</td>
-            <td>
-                <a th:href="@{'/edit/'+${product.id}}"><button type="button" class="btn btn-info">Редактировать</button></a>
-                <a th:href="@{'/delete/'+${product.id}}"><button type="button" class="btn btn-danger">Удалить</button></a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+        <table id="productTable" class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col" class="sortable" data-field="id">ID товара</th>
+                <th scope="col" class="sortable" data-field="category">Категория</th>
+                <th scope="col" class="sortable" data-field="name">Название</th>
+                <th scope="col" class="sortable" data-field="manufacturer">Производитель</th>
+                <th scope="col" class="sortable" data-field="quantity">В наличии</th>
+                <th scope="col" class="sortable" data-field="price">Цена</th>
+                <th scope="col" class="sortable" data-field="deliveryDate">Дата поставки</th>
+                <th scope="col">Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${listProduct}">
+                <th scope="row" class="text-dark" th:text="${product.id}">ID товара отсутствует</th>
+                <td class="text-dark" th:text="${product.category.name}">Категория отсутствует</td>
+                <td class="text-dark" th:text="${product.name}">Название отсутствует</td>
+                <td class="text-dark" th:text="${product.manufacturer}">Производитель отсутствует</td>
+                <td class="text-dark" th:text="${product.quantity}">Количество отсутствует</td>
+                <td class="text-dark" th:text="${product.price}">Цена отсутствует</td>
+                <td class="text-dark" th:text="${product.deliveryDate}">Дата поставки отсутствует</td>
+                <td>
+                    <a th:href="@{'/edit/'+${product.id}}"><button type="button" class="btn btn-info">Редактировать</button></a>
+                    <a th:href="@{'/delete/'+${product.id}}"><button type="button" class="btn btn-danger">Удалить</button></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-<script type="text/javascript">
-    function clearSearch() {
-        window.location = "[[@{/}]]";
-    }
+    <script type="text/javascript">
+        function clearSearch() {
+            window.location = "[[@{/}]]";
+        }
 
-    // Сортировка таблицы
-    document.addEventListener('DOMContentLoaded', function () {
-        const table = document.getElementById('productTable');
-        const headers = table.querySelectorAll('th.sortable');
-        const tbody = table.querySelector('tbody');
+        // Сортировка таблицы
+        document.addEventListener('DOMContentLoaded', function () {
+            const table = document.getElementById('productTable');
+            const headers = table.querySelectorAll('th.sortable');
+            const tbody = table.querySelector('tbody');
 
-        headers.forEach(header => {
-            header.addEventListener('click', () => {
-                const field = header.dataset.field;
-                const rows = Array.from(tbody.rows);
+            headers.forEach(header => {
+                header.addEventListener('click', () => {
+                    const field = header.dataset.field;
+                    const rows = Array.from(tbody.rows);
 
-                const isAscending = header.classList.contains('ascending');
-                header.classList.toggle('ascending', !isAscending);
-                header.classList.toggle('descending', isAscending);
+                    const isAscending = header.classList.contains('ascending');
+                    header.classList.toggle('ascending', !isAscending);
+                    header.classList.toggle('descending', isAscending);
 
-                rows.sort((a, b) => {
-                    const aText = a.querySelector(`td:nth-child(${Array.from(headers).indexOf(header) + 1})`).textContent;
-                    const bText = b.querySelector(`td:nth-child(${Array.from(headers).indexOf(header) + 1})`).textContent;
+                    rows.sort((a, b) => {
+                        const aText = a.querySelector(`td:nth-child(${Array.from(headers).indexOf(header) + 1})`).textContent;
+                        const bText = b.querySelector(`td:nth-child(${Array.from(headers).indexOf(header) + 1})`).textContent;
 
-                    if (isNaN(aText) && isNaN(bText)) {
-                        return isAscending ? aText.localeCompare(bText) : bText.localeCompare(aText);
-                    }
-                    return isAscending ? aText - bText : bText - aText;
+                        if (isNaN(aText) && isNaN(bText)) {
+                            return isAscending ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                        }
+                        return isAscending ? aText - bText : bText - aText;
+                    });
+
+                    rows.forEach(row => tbody.appendChild(row)); // Добавляем отсортированные строки обратно в tbody
                 });
-
-                rows.forEach(row => tbody.appendChild(row)); // Добавляем отсортированные строки обратно в tbody
             });
+
+            // Подсчёт количества строк таблицы
+            function getRowsColumn() {
+                let table = document.getElementById('productTable');
+                let tBody = table.querySelector('tbody');
+                const count = tBody.querySelectorAll('tr').length;
+                document.getElementById('productCount').innerHTML = 'Количество товаров в таблице: ' + count;
+            }
+
+            // Вызываем функцию после полной загрузки страницы
+            getRowsColumn();
         });
 
-        // Подсчёт количества строк таблицы
-        function getRowsColumn() {
-            let table = document.getElementById('productTable');
-            let tBody = table.querySelector('tbody');
-            const count = tBody.querySelectorAll('tr').length;
-            document.getElementById('productCount').innerHTML = 'Количество товаров в таблице: ' + count;
+        // Функция для получения текущего пользователя с сервера
+        async function getCurrentUser() {
+            const response = await fetch('/api/users/current');
+            if (response.ok) {
+                const user = await response.json();
+                return user;
+            }
+            return null;
         }
 
-        // Вызываем функцию после полной загрузки страницы
-        getRowsColumn();
-    });
-
-    // Функция для получения текущего пользователя с сервера
-    async function getCurrentUser() {
-        const response = await fetch('/api/users/current');
-        if (response.ok) {
-            const user = await response.json();
-            return user;
-        }
-        return null;
-    }
-
-    // Функция для проверки роли и скрытия кнопки "Панель администратора"
-    async function checkUserRoles() {
-        const user = await getCurrentUser();
-        if (user && user.roles && !user.roles.some(role => role.name === 'ROLE_ADMIN')) {
-            const usersButton = document.getElementById('usersButton');
-            if (usersButton) {
-                usersButton.style.display = 'none';
+        // Функция для проверки роли и скрытия кнопки "Панель администратора"
+        async function checkUserRoles() {
+            const user = await getCurrentUser();
+            if (user && user.roles && !user.roles.some(role => role.name === 'ROLE_ADMIN')) {
+                const usersButton = document.getElementById('usersButton');
+                if (usersButton) {
+                    usersButton.style.display = 'none';
+                }
             }
         }
-    }
 
-    // Вызов функции после загрузки страницы
-    window.onload = checkUserRoles;
-</script>
+        // Вызов функции после загрузки страницы
+        window.onload = checkUserRoles;
+    </script>
 </body>
 </html>
+
 
 
