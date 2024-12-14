@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * Сервисный класс для работы с пользователями и их ролями.
+ * Обеспечивает регистрацию, управление пользователями, их ролями и взаимодействие с репозиториями.
+ */
 @Service
 public class UserService {
 
@@ -17,19 +21,36 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Конструктор для внедрения зависимостей.
+     *
+     * @param userRepository репозиторий для работы с пользователями
+     * @param roleRepository репозиторий для работы с ролями
+     * @param passwordEncoder кодировщик паролей
+     */
     public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Возвращает список пользователей, соответствующих ключевому слову.
+    /**
+     * Возвращает список всех пользователей.
+     *
+     * @return список всех пользователей
+     */
     public List<User> listAll() {
         return userRepository.findAll(); // Просто возвращаем всех пользователей из репозитория
     }
 
-    // Регистрирует нового пользователя с указанной ролью.
-    // Если роль не указана, назначается роль "ROLE_USER" по умолчанию.
+    /**
+     * Регистрирует нового пользователя с ролью "ROLE_USER".
+     * Если роль "ROLE_USER" не существует, она создается.
+     * Пароль пользователя шифруется перед сохранением.
+     *
+     * @param user объект пользователя, который необходимо зарегистрировать
+     * @return зарегистрированный пользователь
+     */
     @Transactional
     public User registerUser(User user) {
         // Код для шифрования пароля
@@ -52,30 +73,55 @@ public class UserService {
         return userRepository.save(user);
     }
 
-
-    // Ищет пользователя по имени пользователя (логину).
+    /**
+     * Ищет пользователя по имени пользователя (логину).
+     *
+     * @param username имя пользователя для поиска
+     * @return найденный пользователь или null, если не найден
+     */
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    // Возвращает пользователя по его идентификатору.
+    /**
+     * Возвращает пользователя по его идентификатору.
+     *
+     * @param id идентификатор пользователя
+     * @return найденный пользователь
+     * @throws RuntimeException если пользователь не найден
+     */
     public User get(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Пользователь не найден."));
     }
 
-    // Сохраняет пользователя, обновляя его данные (с кодировкой пароля).
+    /**
+     * Сохраняет или обновляет пользователя, шифруя его пароль перед сохранением.
+     *
+     * @param user объект пользователя, который необходимо сохранить
+     * @return сохраненный или обновленный пользователь
+     */
     public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return user;
     }
 
-    // Удаляет пользователя по его идентификатору.
+    /**
+     * Удаляет пользователя по его идентификатору.
+     *
+     * @param id идентификатор пользователя
+     */
     public void delete(Long id) {
         userRepository.deleteById(id);
     }
 
-    // Метод для обновления роли пользователя на ROLE_ADMIN
+    /**
+     * Обновляет роль пользователя, назначая ему роль "ROLE_ADMIN".
+     * Удаляет все текущие роли пользователя и присваивает только роль "ROLE_ADMIN".
+     *
+     * @param userId идентификатор пользователя, которому нужно назначить роль администратора
+     * @throws IllegalArgumentException если роль "ROLE_ADMIN" не найдена
+     */
     public void assignRoleToAdmin(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
@@ -92,8 +138,6 @@ public class UserService {
             userRepository.save(user);
         }
     }
-
-
 }
 
 

@@ -10,13 +10,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Контроллер для обработки запросов, связанных с продуктами и пользователями.
+ * Обрабатывает страницы для отображения, добавления, редактирования и удаления продуктов,
+ * а также регистрации и авторизации пользователей.
+ */
 @Controller
 @RequestMapping("/")
 public class AppController {
@@ -27,26 +29,28 @@ public class AppController {
     @Autowired
     private UserService userService;
 
-    // Главная страница с продуктами
+    /**
+     * Отображает главную страницу с продуктами.
+     * Также фильтрует продукты по ключевому слову и отображает их на странице.
+     *
+     * @param model модель для передачи данных на страницу
+     * @param keyword ключевое слово для фильтрации продуктов (необязательно)
+     * @return имя шаблона для главной страницы
+     */
     @RequestMapping
     public String viewHomePage(Model model, @RequestParam(value = "keyword", required = false) String keyword) {
         List<Product> listProduct = productService.listAll(keyword);
         model.addAttribute("listProduct", listProduct);
         model.addAttribute("keyword", keyword);
-
-        // Получаем количество продуктов по дате поставки
-        Map<LocalDate, Long> productsByDeliveryDateMap = productService.getProductsCountByDeliveryDate();
-        List<Map.Entry<LocalDate, Long>> productsByDeliveryDateList = new ArrayList<>(productsByDeliveryDateMap.entrySet());
-        model.addAttribute("productsByDeliveryDateList", productsByDeliveryDateList);
-
-        // Средняя цена
-        BigDecimal averagePrice = productService.getAveragePrice();
-        model.addAttribute("averagePrice", averagePrice);
-
         return "index"; // Главная страница
     }
 
-    // Страница для добавления нового продукта
+    /**
+     * Отображает страницу для добавления нового продукта.
+     *
+     * @param model модель для передачи данных на страницу
+     * @return имя шаблона для формы добавления нового продукта
+     */
     @RequestMapping("/new")
     public String showNewProductForm(Model model) {
         Product product = new Product();
@@ -54,14 +58,24 @@ public class AppController {
         return "new_product"; // Форма для добавления нового продукта
     }
 
-    // Сохранение нового продукта
+    /**
+     * Сохраняет новый продукт.
+     *
+     * @param product продукт для сохранения
+     * @return перенаправление на главную страницу после сохранения
+     */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public String saveProduct(@ModelAttribute("product") Product product) {
         productService.save(product);
         return "redirect:/"; // Перенаправление на главную страницу
     }
 
-    // Страница редактирования продукта
+    /**
+     * Отображает страницу для редактирования продукта.
+     *
+     * @param id идентификатор продукта
+     * @return объект ModelAndView для отображения страницы редактирования
+     */
     @RequestMapping("/edit/{id}")
     public ModelAndView showEditProductForm(@PathVariable(name = "id") Long id) {
         ModelAndView mav = new ModelAndView("edit_product");
@@ -70,14 +84,24 @@ public class AppController {
         return mav;
     }
 
-    // Удаление продукта
+    /**
+     * Удаляет продукт.
+     *
+     * @param id идентификатор продукта для удаления
+     * @return перенаправление на главную страницу после удаления
+     */
     @RequestMapping("/delete/{id}")
     public String deleteProduct(@PathVariable(name = "id") Long id) {
         productService.delete(id);
         return "redirect:/"; // Перенаправление на главную страницу
     }
 
-    // Страница с гистограммой
+    /**
+     * Отображает страницу с гистограммой для продуктов.
+     *
+     * @param model модель для передачи данных на страницу
+     * @return имя шаблона для страницы с гистограммой
+     */
     @GetMapping("/histogram")
     public String showHistogram(Model model) {
         Map<LocalDate, Long> productsCount = productService.getProductsCountByDeliveryDate();
@@ -85,8 +109,12 @@ public class AppController {
         return "histogram"; // Страница с гистограммой
     }
 
-
-    // Страница регистрации нового пользователя
+    /**
+     * Отображает страницу регистрации нового пользователя.
+     *
+     * @param model модель для передачи данных на страницу
+     * @return имя шаблона для страницы регистрации
+     */
     @RequestMapping("/register")
     public String showRegisterForm(Model model) {
         User user = new User();
@@ -94,15 +122,24 @@ public class AppController {
         return "register"; // Шаблон страницы регистрации
     }
 
-    // Обработка регистрации нового пользователя
+    /**
+     * Обрабатывает регистрацию нового пользователя.
+     *
+     * @param user пользователь для регистрации
+     * @return перенаправление на страницу логина после регистрации
+     */
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public String registerUser(@ModelAttribute("user") User user) {
         userService.registerUser(user);  // Роль по умолчанию будет присвоена внутри UserService
         return "redirect:/login";
     }
 
-
-    // Страница авторизации
+    /**
+     * Отображает страницу авторизации пользователя.
+     *
+     * @param model модель для передачи данных на страницу
+     * @return имя шаблона для страницы авторизации
+     */
     @RequestMapping("/login")
     public String showLoginForm(Model model) {
         User user = new User();
@@ -110,6 +147,14 @@ public class AppController {
         return "login"; // Шаблон страницы логина
     }
 
+    /**
+     * Обрабатывает ошибку авторизации и отображает сообщение при выходе.
+     *
+     * @param error сообщение об ошибке входа
+     * @param logout сообщение о выходе
+     * @param model модель для передачи данных на страницу
+     * @return имя шаблона для страницы логина
+     */
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error,
                         @RequestParam(value = "logout", required = false) String logout,
@@ -123,7 +168,12 @@ public class AppController {
         return "login";
     }
 
-    // Маршрут для страницы пользователей, доступный только администраторам
+    /**
+     * Отображает страницу пользователей, доступную только администраторам.
+     *
+     * @param model модель для передачи данных на страницу
+     * @return имя шаблона для страницы пользователей
+     */
     @GetMapping("/users")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String viewUsersPage(Model model) {
@@ -132,25 +182,38 @@ public class AppController {
         return "users"; // Имя шаблона Thymeleaf (users.html)
     }
 
+    /**
+     * Удаляет пользователя.
+     *
+     * @param id идентификатор пользователя для удаления
+     * @return перенаправление на страницу управления пользователями
+     */
     @PostMapping("/users/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
         userService.delete(id); // Вызываем метод сервиса для удаления пользователя
         return "redirect:/users"; // Перенаправляем обратно на страницу управления пользователями
     }
 
+    /**
+     * Назначает роль администратора пользователю.
+     *
+     * @param userId идентификатор пользователя
+     * @return перенаправление на страницу с пользователями
+     */
     @PostMapping("/assignRole/{userId}")
     public String assignRole(@PathVariable Long userId) {
         userService.assignRoleToAdmin(userId); // Обновляем роль пользователя
         return "redirect:/users"; // Перенаправляем на страницу с пользователями
     }
 
+    /**
+     * Отображает страницу с информацией о проекте.
+     *
+     * @return имя шаблона для страницы "Об авторе"
+     */
     @GetMapping("/author")
     public String aboutPage() {
         return "author";
     }
 
 }
-
-
-
-

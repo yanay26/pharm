@@ -24,6 +24,10 @@ repositories {
     mavenCentral()
 }
 
+javadoc {
+    source = sourceSets.main.allJava
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-rest'
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'

@@ -16,13 +16,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-
-//Конфигурация безопасности для проекта аптеки
+/**
+ * Конфигурация безопасности для проекта аптеки.
+ * <p>
+ * Этот класс настраивает безопасность веб-приложения, включая аутентификацию, авторизацию,
+ * кодирование паролей и обработку входа/выхода пользователей.
+ * </p>
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -30,24 +33,40 @@ public class SecurityConfig {
 
     private final UserService userService;
 
+    /**
+     * Конструктор класса, который инжектит сервис пользователя.
+     *
+     * @param userService сервис для работы с пользователями
+     */
     @Autowired
     public SecurityConfig(@Lazy UserService userService) {
         this.userService = userService;
     }
 
-    //Бин кодировщика паролей (BCrypt)
+    /**
+     * Бин для кодировщика паролей с использованием BCrypt.
+     *
+     * @return экземпляр BCryptPasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    //Бин для загрузки пользователей по имени
+    /**
+     * Бин для загрузки пользователей по имени. Этот метод используется Spring Security для аутентификации.
+     * Он загружает данные пользователя по имени и создает объект UserDetails.
+     *
+     * @return реализация UserDetailsService для поиска пользователей по имени
+     */
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
             User user = userService.findByUsername(username);
             if (user != null) {
-                return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+                return new org.springframework.security.core.userdetails.User(
+                        user.getUsername(),
+                        user.getPassword(),
                         user.getRoles().stream()
                                 .map(role -> new org.springframework.security.core.authority.SimpleGrantedAuthority(role.getName()))
                                 .toList());
@@ -56,7 +75,13 @@ public class SecurityConfig {
         };
     }
 
-    //Менеджер аутентификации
+    /**
+     * Бин для менеджера аутентификации. Настроен для использования кастомного UserDetailsService и кодировщика паролей.
+     *
+     * @param http объект конфигурации HttpSecurity
+     * @return объект AuthenticationManager для управления аутентификацией
+     * @throws Exception в случае ошибки настройки менеджера аутентификации
+     */
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
@@ -64,8 +89,13 @@ public class SecurityConfig {
         return authBuilder.build();
     }
 
-
-    //Настройки безопасности
+    /**
+     * Настройки безопасности для приложения, включая доступ к различным URL в зависимости от роли пользователя.
+     *
+     * @param http объект конфигурации HttpSecurity
+     * @return объект SecurityFilterChain для настройки безопасности
+     * @throws Exception в случае ошибки настройки безопасности
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -77,7 +107,6 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login") // Кастомная страница логина
-                        //.successHandler(customAuthenticationSuccessHandler()) // Обработчик успешного входа
                         .defaultSuccessUrl("/") // Перенаправление при успешном входе
                         .failureUrl("/login?error=true") // Перенаправление при ошибке входа
                         .permitAll()
@@ -95,7 +124,14 @@ public class SecurityConfig {
         return http.build();
     }
 
-    //Обработчик успешного входа в систему
+    /**
+     * Обработчик успешного входа в систему.
+     * <p>
+     * После успешной аутентификации пользователь будет перенаправлен на главную страницу.
+     * </p>
+     *
+     * @return обработчик успешного входа
+     */
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
         return (HttpServletRequest request, HttpServletResponse response,

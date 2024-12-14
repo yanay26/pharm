@@ -6,18 +6,20 @@ import org.example.pharm.service.RoleService;
 import org.example.pharm.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
+/**
+ * Контроллер для управления пользователями.
+ * Предоставляет RESTful API для получения списка пользователей, удаления пользователя,
+ * назначения роли администратора и получения текущего пользователя.
+ * Доступ к методам контроллера ограничен ролями через Spring Security.
+ */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -28,7 +30,12 @@ public class UserController {
     @Autowired
     private RoleService roleService;
 
-    // Получение списка пользователей
+    /**
+     * Получение списка всех пользователей.
+     * Доступно только пользователю с ролью ADMIN.
+     *
+     * @return Список всех пользователей в формате JSON
+     */
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<User>> getUsers() {
@@ -36,7 +43,13 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    // Удаление пользователя
+    /**
+     * Удаление пользователя по его ID.
+     * Доступно только пользователю с ролью ADMIN.
+     *
+     * @param id ID пользователя, которого нужно удалить
+     * @return Статус ответа HTTP
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
@@ -44,7 +57,13 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    // Сделать пользователя администратором
+    /**
+     * Назначение роли администратора пользователю по его ID.
+     * Доступно только пользователю с ролью ADMIN.
+     *
+     * @param id ID пользователя, которому нужно присвоить роль администратора
+     * @return Обновленный пользователь в формате JSON
+     */
     @PutMapping("/{id}/makeAdmin")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<User> makeUserAdmin(@PathVariable Long id) {
@@ -69,6 +88,13 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * Получение информации о текущем аутентифицированном пользователе.
+     * Возвращает данные о пользователе, если он аутентифицирован.
+     *
+     * @param principal Информация о текущем пользователе из контекста безопасности
+     * @return Данные о текущем пользователе в формате JSON, либо статус UNAUTHORIZED
+     */
     @GetMapping("/current")
     public ResponseEntity<User> getCurrentUser(Principal principal) {
         if (principal != null) {

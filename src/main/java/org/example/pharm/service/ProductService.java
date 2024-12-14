@@ -4,43 +4,67 @@ import org.example.pharm.model.Product;
 import org.example.pharm.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для работы с продуктами.
+ * Включает методы для получения, сохранения, удаления продуктов,
+ * а также для получения статистики по продуктам.
+ */
 @Service
 public class ProductService {
 
     @Autowired
     private ProductRepository repo;
 
-    // Список всех продуктов с возможностью поиска
+    /**
+     * Получает список всех продуктов с возможностью фильтрации по ключевому слову.
+     *
+     * @param keyword ключевое слово для фильтрации продуктов (может быть null или пустым)
+     * @return список продуктов, отфильтрованный по ключевому слову (или все продукты, если фильтр не задан)
+     */
     public List<Product> listAll(String keyword) {
         if (keyword == null || keyword.isEmpty()) {
             return repo.findAll();
         }
         return repo.search(keyword);
-
     }
 
-    // Сохранение продукта
+    /**
+     * Сохраняет продукт в базе данных.
+     *
+     * @param product продукт, который нужно сохранить
+     */
     public void save(Product product) {
         repo.save(product);
     }
 
-    // Получение продукта по ID
+    /**
+     * Получает продукт по ID.
+     *
+     * @param id идентификатор продукта
+     * @return продукт с указанным ID или null, если продукт не найден
+     */
     public Product get(Long id) {
         return repo.findById(id).orElse(null);
     }
 
-    // Удаление продукта по ID
+    /**
+     * Удаляет продукт по ID.
+     *
+     * @param id идентификатор продукта, который нужно удалить
+     */
     public void delete(Long id) {
         repo.deleteById(id);
     }
 
-    // Получение количества продуктов по дате поставки за последние 14 дней
+    /**
+     * Получает количество продуктов по дате поставки за последние 14 дней.
+     *
+     * @return карта, где ключ - дата поставки, а значение - количество продуктов с этой датой поставки
+     */
     public Map<LocalDate, Long> getProductsCountByDeliveryDate() {
         List<Product> allProducts = repo.findAll();
         Map<LocalDate, Long> countMap = new HashMap<>();
@@ -68,16 +92,7 @@ public class ProductService {
                         LinkedHashMap::new
                 ));
     }
-
-    // Получение средней стоимости продуктов
-    public BigDecimal getAveragePrice() {
-        return repo.calculateAveragePrice();
-    }
-
-    // Получение средней стоимости запасов продуктов
-    //public BigDecimal getAverageStockValue() {
-    //    return repo.calculateAverageStockValue();
-    //}
 }
+
 
 
