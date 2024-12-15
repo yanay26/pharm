@@ -1,89 +1,103 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Устанавливаем кодировку страницы -->
     <meta charset="UTF-8">
+
+    <!-- Устанавливаем адаптивность страницы для разных устройств -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Заголовок страницы -->
     <title>Категории</title>
+
+    <!-- Подключаем стили Bootstrap для оформления страницы -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
     <style>
+        /* Стили для страницы */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7fa;
+            font-family: Arial, sans-serif; /* Шрифт страницы */
+            background-color: #f4f7fa; /* Цвет фона */
             padding: 20px;
         }
 
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
+            text-align: center; /* Выравнивание заголовка по центру */
+            color: #333; /* Цвет текста */
+            margin-bottom: 30px; /* Отступ снизу */
         }
 
+        /* Стили для таблицы */
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
+            width: 100%; /* Ширина таблицы на всю страницу */
+            border-collapse: collapse; /* Убираем расстояние между ячейками */
+            margin-bottom: 30px; /* Отступ снизу */
         }
 
+        /* Стили для границ таблицы и ячеек */
         table, th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #ddd; /* Светлая граница для таблицы */
         }
 
         th, td {
-            padding: 12px;
-            text-align: left;
+            padding: 12px; /* Отступы внутри ячеек */
+            text-align: left; /* Выравнивание текста в ячейках по левому краю */
         }
 
         th {
-            background-color: #f8f9fa;
+            background-color: #f8f9fa; /* Цвет фона для заголовков таблицы */
         }
 
         td {
-            background-color: #fff;
+            background-color: #fff; /* Цвет фона для данных в таблице */
         }
 
+        /* Стили для кнопки на главную */
         .btn-back {
-            display: block;
-            width: 200px;
-            margin: 0 auto 30px;  /* отступ снизу для разделения с заголовком */
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s ease, color 0.3s ease;  /* Плавное изменение фона и текста */
-
+            display: block; /* Блоковое отображение кнопки */
+            width: 200px; /* Ширина кнопки */
+            margin: 0 auto 30px;  /* Центрируем кнопку и отступ снизу */
+            padding: 10px 20px; /* Внутренние отступы кнопки */
+            background-color: #007bff; /* Цвет фона кнопки */
+            color: white; /* Цвет текста на кнопке */
+            text-align: center; /* Выравнивание текста по центру */
+            text-decoration: none; /* Убираем подчеркивание текста */
+            border-radius: 5px; /* Скругленные углы */
+            font-weight: bold; /* Жирный текст */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Плавное изменение фона и текста */
         }
 
         .btn-back:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Цвет кнопки при наведении */
             color: #fff;  /* Явно задаем белый цвет текста на hover */
         }
 
         .btn-back:focus {
-            outline: none;  /* Убираем контур при фокусе */
+            outline: none;  /* Убираем контур при фокусе на кнопке */
         }
     </style>
 </head>
 <body>
 
-<!-- Кнопка на главную -->
+<!-- Кнопка для перехода на главную страницу -->
 <a href="/" class="btn-back">На главную</a>
 
-<!-- Заголовок категории -->
+<!-- Заголовок страницы "Категории" -->
 <h1>Категории</h1>
 
+<!-- Контейнер для таблицы -->
 <div class="container">
+    <!-- Таблица с категориями -->
     <table>
         <thead>
         <tr>
-            <th>Название категории</th>
+            <th>Название категории</th> <!-- Заголовок столбца -->
         </tr>
         </thead>
         <tbody>
+        <!-- Динамическое добавление категорий из коллекции -->
         <tr th:each="category : ${categories}">
-            <td th:text="${category.name}"></td>
+            <td th:text="${category.name}"></td> <!-- Выводим название категории -->
         </tr>
         </tbody>
     </table>
@@ -91,5 +105,3 @@
 
 </body>
 </html>
-
-

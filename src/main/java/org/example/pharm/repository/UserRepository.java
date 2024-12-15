@@ -3,31 +3,33 @@ package org.example.pharm.repository;
 import org.example.pharm.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 
 /**
- * Репозиторий для работы с сущностью {@link User}.
- * Этот интерфейс расширяет {@link JpaRepository} и предоставляет методы для выполнения операций CRUD с пользователями.
+ * Репозиторий для работы с {@link User}.
+ * Обеспечивает доступ к данным пользователей и предоставляет методы для поиска пользователей по имени или ID.
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
-     * Находит пользователя по его имени пользователя (логину).
+     * Ищет пользователя по имени пользователя (username).
      *
-     * @param username имя пользователя (логин)
-     * @return найденный пользователь или {@code null}, если пользователь не найден
+     * @param username Имя пользователя.
+     * @return Пользователь с заданным именем пользователя.
      */
     User findByUsername(String username);
 
     /**
-     * Находит пользователя по его идентификатору.
+     * Ищет пользователя по его идентификатору (ID).
      *
-     * @param id идентификатор пользователя
-     * @return опциональный объект {@link Optional}, содержащий пользователя, если он найден
+     * @param id Идентификатор пользователя.
+     * @return Опционально возвращает пользователя с заданным ID.
      */
     Optional<User> findById(Long id);
 }
+
 
 
 

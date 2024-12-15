@@ -20,10 +20,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Конфигурация безопасности для проекта аптеки.
+ * Конфигурация безопасности приложения.
  * <p>
- * Этот класс настраивает безопасность веб-приложения, включая аутентификацию, авторизацию,
- * кодирование паролей и обработку входа/выхода пользователей.
+ * Этот класс настраивает безопасность приложения, включая аутентификацию пользователей,
+ * авторизацию, настройку страницы входа и выхода, а также управление доступом на основе ролей.
+ * Включает использование кастомного сервиса для работы с пользователями и ролями.
  * </p>
  */
 @Configuration
@@ -34,7 +35,7 @@ public class SecurityConfig {
     private final UserService userService;
 
     /**
-     * Конструктор класса, который инжектит сервис пользователя.
+     * Конструктор, инициализирующий сервис пользователей.
      *
      * @param userService сервис для работы с пользователями
      */
@@ -44,9 +45,9 @@ public class SecurityConfig {
     }
 
     /**
-     * Бин для кодировщика паролей с использованием BCrypt.
+     * Бин для кодирования паролей с использованием BCrypt.
      *
-     * @return экземпляр BCryptPasswordEncoder
+     * @return PasswordEncoder, использующий BCrypt
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -54,10 +55,10 @@ public class SecurityConfig {
     }
 
     /**
-     * Бин для загрузки пользователей по имени. Этот метод используется Spring Security для аутентификации.
-     * Он загружает данные пользователя по имени и создает объект UserDetails.
+     * Бин для загрузки данных пользователя по имени пользователя.
+     * Используется для аутентификации пользователей.
      *
-     * @return реализация UserDetailsService для поиска пользователей по имени
+     * @return UserDetailsService, который загружает данные пользователя по имени
      */
     @Bean
     public UserDetailsService userDetailsService() {
@@ -76,11 +77,12 @@ public class SecurityConfig {
     }
 
     /**
-     * Бин для менеджера аутентификации. Настроен для использования кастомного UserDetailsService и кодировщика паролей.
+     * Бин для создания менеджера аутентификации с использованием настроенного UserDetailsService
+     * и PasswordEncoder.
      *
-     * @param http объект конфигурации HttpSecurity
-     * @return объект AuthenticationManager для управления аутентификацией
-     * @throws Exception в случае ошибки настройки менеджера аутентификации
+     * @param http объект HttpSecurity для конфигурации безопасности
+     * @return AuthenticationManager для аутентификации пользователей
+     * @throws Exception если возникает ошибка при настройке аутентификации
      */
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
@@ -90,18 +92,20 @@ public class SecurityConfig {
     }
 
     /**
-     * Настройки безопасности для приложения, включая доступ к различным URL в зависимости от роли пользователя.
+     * Бин для настройки фильтрации безопасности.
+     * Настройка маршрутов, доступных пользователю в зависимости от ролей.
+     * Также включает конфигурацию кастомных страниц входа и выхода.
      *
-     * @param http объект конфигурации HttpSecurity
-     * @return объект SecurityFilterChain для настройки безопасности
-     * @throws Exception в случае ошибки настройки безопасности
+     * @param http объект HttpSecurity для конфигурации безопасности
+     * @return SecurityFilterChain, который управляет безопасностью веб-приложения
+     * @throws Exception если возникает ошибка при конфигурации безопасности
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Отключение CSRF для упрощения
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**","/register", "/login").permitAll() // Страницы входа и регистрации доступны всем
+                        .requestMatchers("/css/**", "/js/**", "/register", "/login").permitAll() // Страницы входа и регистрации доступны всем
                         .requestMatchers("/users", "/histogram/data").hasRole("ADMIN") // Доступ к странице /users только для ADMIN
                         .anyRequest().authenticated() // Остальные страницы требуют аутентификации
                 )
@@ -125,12 +129,10 @@ public class SecurityConfig {
     }
 
     /**
-     * Обработчик успешного входа в систему.
-     * <p>
-     * После успешной аутентификации пользователь будет перенаправлен на главную страницу.
-     * </p>
+     * Бин для кастомного обработчика успешной аутентификации.
+     * Перенаправляет пользователя на главную страницу после успешного входа.
      *
-     * @return обработчик успешного входа
+     * @return AuthenticationSuccessHandler для перенаправления на главную страницу после входа
      */
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {

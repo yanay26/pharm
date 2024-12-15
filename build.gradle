@@ -1,63 +1,61 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.4.0'
-    id 'io.spring.dependency-management' version '1.1.6'
-    id 'org.graalvm.buildtools.native' version '0.10.3'
+    id 'java'  // Плагин для работы с Java
+    id 'org.springframework.boot' version '3.4.0'  // Плагин для Spring Boot
+    id 'io.spring.dependency-management' version '1.1.6'  // Плагин для управления зависимостями Spring
+    id 'org.graalvm.buildtools.native' version '0.10.3'  // Плагин для сборки нативных образов с GraalVM
 }
 
-group = 'org.example'
-version = '0.0.1-SNAPSHOT'
+group = 'org.example'  // Группа проекта
+version = '0.0.1-SNAPSHOT'  // Версия проекта
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(21)  // Установка версии JDK
     }
 }
 
 configurations {
     compileOnly {
-        extendsFrom annotationProcessor
+        extendsFrom annotationProcessor  // Конфигурация для аннотационных процессоров
     }
 }
 
 repositories {
-    mavenCentral()
+    mavenCentral()  // Репозиторий для зависимостей
 }
 
 javadoc {
-    source = sourceSets.main.allJava
+    source = sourceSets.main.allJava  // Генерация документации из исходных файлов
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
-    implementation 'org.springframework.boot:spring-boot-starter-graphql'
-    implementation 'org.springframework.boot:spring-boot-starter-groovy-templates'
-    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-    implementation 'org.springframework.boot:spring-boot-starter-jersey'
-    implementation 'org.springframework.boot:spring-boot-starter-mustache'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-web-services'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springframework.data:spring-data-rest-hal-explorer'
-    implementation 'org.springframework.session:spring-session-core'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    // Зависимости Spring Boot для различных функциональностей
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'  // REST API с поддержкой Spring Data
+    implementation 'org.springframework.boot:spring-boot-starter-groovy-templates'  // Поддержка шаблонов Groovy
+    implementation 'org.springframework.boot:spring-boot-starter-security'  // Поддержка Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'  // Поддержка Thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-web'  // Поддержка Web (MVC)
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'  // Поддержка Thymeleaf и Spring Security
+
+    // Зависимости для работы с JPA и базой данных
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    runtimeOnly 'com.oracle.database.jdbc:ojdbc8'
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.projectreactor:reactor-test'
-    testImplementation 'org.springframework.graphql:spring-graphql-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+
+    // Зависимости для разработки
+    compileOnly 'org.projectlombok:lombok'  // Ломбок для упрощения кода (только на этапе компиляции)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'  // Утилиты для разработки
+
+    // Зависимости для работы с базой данных
+    runtimeOnly 'com.mysql:mysql-connector-j'  // MySQL коннектор для работы с базой данных MySQL
+
+    // Зависимости для аннотационных процессоров
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'  // Процессор для автоконфигурации Spring Boot
+    annotationProcessor 'org.projectlombok:lombok'  // Процессор для Ломбок
+
+    // Зависимости для тестирования
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'  // Тестирование с использованием Spring Boot
+    testImplementation 'org.springframework.security:spring-security-test'  // Тестирование с использованием Spring Security
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+    useJUnitPlatform()  // Настройка тестов для использования JUnit Platform
 }

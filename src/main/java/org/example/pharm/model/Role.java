@@ -30,16 +30,6 @@ public class Role {
      */
     public Role() {}
 
-    /**
-     * Метод, вызываемый перед сохранением сущности, для установки значения по умолчанию для имени роли.
-     * Если имя роли не указано, устанавливается значение "ROLE_USER".
-     */
-    @PrePersist
-    public void ensureRoleName() {
-        if (this.name == null) {
-            this.name = "ROLE_USER"; // по умолчанию роль "USER", если не указано другое
-        }
-    }
 }
 
 

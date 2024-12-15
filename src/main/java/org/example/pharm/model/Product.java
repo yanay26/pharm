@@ -5,13 +5,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
- * Сущность, представляющая продукт в аптечном магазине.
- * Хранит информацию о продукте, такую как его название, категория, производитель, цена, количество на складе и дата поставки.
+ * Модель продукта.
+ * <p>
+ * Этот класс представляет сущность "Product", которая используется для хранения информации о продукте в системе аптеки.
+ * Каждый продукт имеет уникальный идентификатор, название, категорию, производителя, цену, количество на складе и дату поставки.
  */
 @Entity
 public class Product {
@@ -25,26 +28,28 @@ public class Product {
     private LocalDate deliveryDate; // Дата поставки
 
     /**
-     * Конструктор без параметров, необходимый для создания объекта сущности.
+     * Конструктор по умолчанию.
+     * <p>
+     * Создает новый объект продукта без значений для полей.
      */
     public Product() {
     }
 
     /**
-     * Получение ID продукта.
+     * Получение идентификатора продукта.
      *
-     * @return ID продукта
+     * @return Идентификатор продукта
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Генерация идентификатора через автоинкремент
     public Long getId() {
         return id;
     }
 
     /**
-     * Установка ID продукта.
+     * Установка идентификатора продукта.
      *
-     * @param id ID продукта
+     * @param id Идентификатор продукта
      */
     public void setId(Long id) {
         this.id = id;
@@ -55,6 +60,7 @@ public class Product {
      *
      * @return Название продукта
      */
+    @Column(nullable = false, length = 255) // Указываем обязательность и максимальную длину
     public String getName() {
         return name;
     }
@@ -74,6 +80,7 @@ public class Product {
      * @return Категория продукта
      */
     @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false) // Связь с категорией, обязательность
     public Category getCategory() {
         return category;
     }
@@ -92,6 +99,7 @@ public class Product {
      *
      * @return Производитель продукта
      */
+    @Column(nullable = false, length = 255) // Указываем обязательность и максимальную длину
     public String getManufacturer() {
         return manufacturer;
     }
@@ -110,6 +118,7 @@ public class Product {
      *
      * @return Цена продукта
      */
+    @Column(nullable = false) // Указываем обязательность
     public BigDecimal getPrice() {
         return price;
     }
@@ -126,8 +135,9 @@ public class Product {
     /**
      * Получение количества продукта на складе.
      *
-     * @return Количество продукта на складе
+     * @return Количество продукта
      */
+    @Column(nullable = false) // Указываем обязательность
     public Integer getQuantity() {
         return quantity;
     }
@@ -135,7 +145,7 @@ public class Product {
     /**
      * Установка количества продукта на складе.
      *
-     * @param quantity Количество продукта на складе
+     * @param quantity Количество продукта
      */
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
@@ -144,8 +154,9 @@ public class Product {
     /**
      * Получение даты поставки продукта.
      *
-     * @return Дата поставки продукта
+     * @return Дата поставки
      */
+    @Column(nullable = false) // Указываем обязательность
     public LocalDate getDeliveryDate() {
         return deliveryDate;
     }
@@ -153,29 +164,12 @@ public class Product {
     /**
      * Установка даты поставки продукта.
      *
-     * @param deliveryDate Дата поставки продукта
+     * @param deliveryDate Дата поставки
      */
     public void setDeliveryDate(LocalDate deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
-
-    /**
-     * Возвращает строковое представление продукта, включая все его атрибуты.
-     *
-     * @return Строковое представление продукта
-     */
-    @Override
-    public String toString() {
-        return "Product [id=" + id +
-                ", name=" + name +
-                ", category=" + (category != null ? category.getName() : "N/A") +
-                ", manufacturer=" + manufacturer +
-                ", price=" + price +
-                ", quantity=" + quantity +
-                ", deliveryDate=" + deliveryDate + "]";
-    }
 }
-
 
 
 

@@ -4,14 +4,15 @@ import org.example.pharm.model.Product;
 import org.example.pharm.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Сервис для работы с продуктами.
- * Включает методы для получения, сохранения, удаления продуктов,
- * а также для получения статистики по продуктам.
+ * Сервис для управления продуктами.
+ * Обеспечивает операции сохранения, получения, удаления продуктов,
+ * а также вычисления статистики по количеству продуктов по датам поставок.
  */
 @Service
 public class ProductService {
@@ -20,50 +21,39 @@ public class ProductService {
     private ProductRepository repo;
 
     /**
-     * Получает список всех продуктов с возможностью фильтрации по ключевому слову.
-     *
-     * @param keyword ключевое слово для фильтрации продуктов (может быть null или пустым)
-     * @return список продуктов, отфильтрованный по ключевому слову (или все продукты, если фильтр не задан)
-     */
-    public List<Product> listAll(String keyword) {
-        if (keyword == null || keyword.isEmpty()) {
-            return repo.findAll();
-        }
-        return repo.search(keyword);
-    }
-
-    /**
      * Сохраняет продукт в базе данных.
      *
-     * @param product продукт, который нужно сохранить
+     * @param product продукт для сохранения.
+     * @return сохраненный продукт.
      */
-    public void save(Product product) {
-        repo.save(product);
+    public Product save(Product product) {
+        return repo.save(product);
     }
 
     /**
-     * Получает продукт по ID.
+     * Получает продукт по его идентификатору.
      *
-     * @param id идентификатор продукта
-     * @return продукт с указанным ID или null, если продукт не найден
+     * @param id идентификатор продукта.
+     * @return продукт с указанным идентификатором, или null, если продукт не найден.
      */
     public Product get(Long id) {
         return repo.findById(id).orElse(null);
     }
 
     /**
-     * Удаляет продукт по ID.
+     * Удаляет продукт по его идентификатору.
      *
-     * @param id идентификатор продукта, который нужно удалить
+     * @param id идентификатор продукта, который нужно удалить.
      */
     public void delete(Long id) {
         repo.deleteById(id);
     }
 
     /**
-     * Получает количество продуктов по дате поставки за последние 14 дней.
+     * Получает статистику по количеству продуктов, поставленных в последние 14 дней.
      *
-     * @return карта, где ключ - дата поставки, а значение - количество продуктов с этой датой поставки
+     * @return карта, где ключом является дата поставки, а значением - количество продуктов, поставленных в эту дату.
+     *         Продукты учитываются только за последние 14 дней.
      */
     public Map<LocalDate, Long> getProductsCountByDeliveryDate() {
         List<Product> allProducts = repo.findAll();
@@ -93,5 +83,6 @@ public class ProductService {
                 ));
     }
 }
+
 
 

@@ -1,41 +1,51 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Устанавливаем кодировку страницы -->
     <meta charset="UTF-8">
+
+    <!-- Устанавливаем метатег для адаптивности страницы на мобильных устройствах -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Заголовок страницы -->
     <title>Вход в аптечную систему</title>
+
+    <!-- Подключаем стили CSS для оформления страницы -->
     <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
 <div class="bg-image">
+    <!-- Контейнер для формы входа -->
     <div class="form-container">
         <h1>Вход в аптечную систему</h1>
 
-        <!-- Уведомления об ошибке или успешном выходе -->
+        <!-- Блок для вывода сообщений об ошибках или успешном выходе -->
         <div th:if="${errorMessage}" class="search-results error">
-            <p th:text="${errorMessage}"></p>
+            <p th:text="${errorMessage}"></p> <!-- Показывает сообщение об ошибке -->
         </div>
         <div th:if="${logoutMessage}" class="search-results success">
-            <p th:text="${logoutMessage}"></p>
+            <p th:text="${logoutMessage}"></p> <!-- Показывает сообщение об успешном выходе -->
         </div>
 
-        <!-- Форма входа -->
+        <!-- Форма для входа пользователя -->
         <form th:action="@{/login}" method="post">
+            <!-- Поле для ввода логина -->
             <div class="form-group">
                 <label for="username">Логин:</label>
-                <input id="username" name="username" type="text" required />
+                <input id="username" name="username" type="text" required /> <!-- Поле для логина -->
             </div>
+            <!-- Поле для ввода пароля -->
             <div class="form-group">
                 <label for="password">Пароль:</label>
-                <input id="password" name="password" type="password" required />
+                <input id="password" name="password" type="password" required /> <!-- Поле для пароля -->
             </div>
+            <!-- Кнопка для отправки формы входа -->
             <button type="submit" class="btn btn-primary">Войти</button>
         </form>
 
-        <!-- Ссылка на регистрацию -->
+        <!-- Ссылка на страницу регистрации для новых пользователей -->
         <a href="/register">Зарегистрироваться</a>
     </div>
 </div>
 </body>
 </html>
-

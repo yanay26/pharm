@@ -1,36 +1,43 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<html lang="ru">
 <head>
+    <!-- Устанавливаем кодировку страницы -->
     <meta charset="UTF-8">
+
+    <!-- Заголовок страницы -->
     <title>Аптека</title>
+
+    <!-- Подключаем стили Bootstrap для оформления страницы -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- Стили для оформления элементов страницы -->
     <style>
         body {
-            background-color: #f9f9f9;
+            background-color: #f9f9f9; /* Устанавливаем светлый фон */
         }
         .button-block {
-            margin-top: 20px; /* Увеличенный отступ сверху */
+            margin-top: 20px; /* Увеличенный отступ сверху для кнопок */
         }
 
         .nav {
-            background-color: #f8f9fa;
+            background-color: #f8f9fa; /* Фон для навигационного меню */
             padding: 10px;
         }
         .nav .nav-link {
-            color: #007bff;
+            color: #007bff; /* Цвет текста для ссылок */
             margin-right: 15px;
-            text-decoration: none;
+            text-decoration: none; /* Убираем подчеркивание у ссылок */
         }
         .nav .nav-link:hover {
-            text-decoration: underline;
+            text-decoration: underline; /* Добавляем подчеркивание при наведении */
         }
     </style>
 </head>
 <body>
 <div class="bg-image" style="height: 100vh; overflow: auto">
 
-    <!-- Навигационное меню -->
+    <!-- Навигационное меню с ссылками на другие страницы -->
     <nav>
         <ul class="nav">
             <li class="nav-item">
@@ -44,36 +51,36 @@
 
     <!-- Контейнер для кнопок -->
     <div class="d-flex justify-content-center align-items-center p-3">
-        <!-- Кнопка Панель администратора -->
-        <a href="/users" id="usersButton" class="me-2">
+        <!-- Кнопка для панели администратора, скрыта по умолчанию -->
+        <a id="usersButton" href="/users" class="me-2" style="display:none;">
             <button type="button" class="btn btn-warning">Панель администратора</button>
         </a>
 
-        <!-- Кнопка Выйти -->
+        <!-- Кнопка для выхода из системы -->
         <form action="/logout" method="post" class="m-0">
             <button type="submit" class="btn btn-danger">Выйти</button>
         </form>
     </div>
 
+    <!-- Заголовок для страницы -->
     <blockquote class="blockquote text-center mt-4"><h1>Информационно-справочная система аптеки</h1></blockquote>
+
+    <!-- Форма для поиска товаров -->
     <div class="row">
         <div class="col-md-8 offset-md-4">
-            <form th:action="@{/}" method="get">
-                <!-- Поле для поиска по ключевому слову -->
-                <input type="text" name="keyword" id="keyword" size="70" th:value="${keyword}" placeholder="Поиск" required/>
-                <input type="submit" class="btn btn-success btn-sm" value="Поиск"/>
-                <input type="button" class="btn btn-warning btn-sm" value="Очистить" id="btnClear" onclick="clearSearch()"/>
+            <form id="searchForm" onsubmit="event.preventDefault(); fetchProducts();">
+                <input type="text" name="keyword" id="keyword" size="70" placeholder="Поиск"/> <!-- Поле для ввода ключевого слова -->
+                <input type="submit" class="btn btn-success btn-sm" value="Поиск"/> <!-- Кнопка для поиска -->
+                <input type="button" class="btn btn-warning btn-sm" value="Очистить" onclick="clearSearch()"/> <!-- Кнопка для очистки поиска -->
             </form>
         </div>
     </div>
 
-    <!-- Кнопки "Добавить товар" и "Гистограмма" с увеличенным отступом -->
+    <!-- Кнопки "Добавить товар" и "Гистограмма" -->
     <div class="button-block">
         <blockquote class="blockquote text-center">
-            <a href="/new">
-                <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
-                    Добавить товар
-                </button>
+            <a href="/new-product">
+                <button type="button" class="btn btn-primary">Добавить товар</button>
             </a>
         </blockquote>
         <blockquote class="blockquote text-center">
@@ -82,11 +89,12 @@
             </a>
         </blockquote>
 
-        <!-- Количество товаров -->
+        <!-- Отображение количества товаров в таблице -->
         <p class="text-dark" id="productCount" style="margin-top: 20px;">
-            Количество товаров в таблице: <span th:text="${productCount}">11</span>
+            Количество товаров в таблице: <span id="productCountValue">0</span>
         </p>
 
+        <!-- Таблица для отображения списка товаров -->
         <table id="productTable" class="table table-striped table-hover">
             <thead>
             <tr>
@@ -100,96 +108,91 @@
                 <th scope="col">Действия</th>
             </tr>
             </thead>
-            <tbody>
-            <tr th:each="product : ${listProduct}">
-                <th scope="row" class="text-dark" th:text="${product.id}">ID товара отсутствует</th>
-                <td class="text-dark" th:text="${product.category.name}">Категория отсутствует</td>
-                <td class="text-dark" th:text="${product.name}">Название отсутствует</td>
-                <td class="text-dark" th:text="${product.manufacturer}">Производитель отсутствует</td>
-                <td class="text-dark" th:text="${product.quantity}">Количество отсутствует</td>
-                <td class="text-dark" th:text="${product.price}">Цена отсутствует</td>
-                <td class="text-dark" th:text="${product.deliveryDate}">Дата поставки отсутствует</td>
-                <td>
-                    <a th:href="@{'/edit/'+${product.id}}"><button type="button" class="btn btn-info">Редактировать</button></a>
-                    <a th:href="@{'/delete/'+${product.id}}"><button type="button" class="btn btn-danger">Удалить</button></a>
-                </td>
-            </tr>
+            <tbody id="productTableBody">
+            <!-- Продукты будут добавлены динамически через JavaScript -->
             </tbody>
         </table>
     </div>
 
     <script type="text/javascript">
-        function clearSearch() {
-            window.location = "[[@{/}]]";
-        }
-
-        // Сортировка таблицы
-        document.addEventListener('DOMContentLoaded', function () {
-            const table = document.getElementById('productTable');
-            const headers = table.querySelectorAll('th.sortable');
-            const tbody = table.querySelector('tbody');
-
-            headers.forEach(header => {
-                header.addEventListener('click', () => {
-                    const field = header.dataset.field;
-                    const rows = Array.from(tbody.rows);
-
-                    const isAscending = header.classList.contains('ascending');
-                    header.classList.toggle('ascending', !isAscending);
-                    header.classList.toggle('descending', isAscending);
-
-                    rows.sort((a, b) => {
-                        const aText = a.querySelector(`td:nth-child(${Array.from(headers).indexOf(header) + 1})`).textContent;
-                        const bText = b.querySelector(`td:nth-child(${Array.from(headers).indexOf(header) + 1})`).textContent;
-
-                        if (isNaN(aText) && isNaN(bText)) {
-                            return isAscending ? aText.localeCompare(bText) : bText.localeCompare(aText);
-                        }
-                        return isAscending ? aText - bText : bText - aText;
-                    });
-
-                    rows.forEach(row => tbody.appendChild(row)); // Добавляем отсортированные строки обратно в tbody
-                });
-            });
-
-            // Подсчёт количества строк таблицы
-            function getRowsColumn() {
-                let table = document.getElementById('productTable');
-                let tBody = table.querySelector('tbody');
-                const count = tBody.querySelectorAll('tr').length;
-                document.getElementById('productCount').innerHTML = 'Количество товаров в таблице: ' + count;
-            }
-
-            // Вызываем функцию после полной загрузки страницы
-            getRowsColumn();
-        });
-
-        // Функция для получения текущего пользователя с сервера
+        // Функция для получения текущего пользователя
         async function getCurrentUser() {
             const response = await fetch('/api/users/current');
             if (response.ok) {
-                const user = await response.json();
-                return user;
+                return await response.json(); // Возвращаем данные текущего пользователя
             }
-            return null;
+            return null; // Если не удалось получить данные, возвращаем null
         }
 
-        // Функция для проверки роли и скрытия кнопки "Панель администратора"
+        // Функция для проверки ролей пользователя
         async function checkUserRoles() {
             const user = await getCurrentUser();
-            if (user && user.roles && !user.roles.some(role => role.name === 'ROLE_ADMIN')) {
-                const usersButton = document.getElementById('usersButton');
-                if (usersButton) {
-                    usersButton.style.display = 'none';
-                }
+            if (user && user.roles && user.roles.some(role => role.name === 'ROLE_ADMIN')) {
+                document.getElementById('usersButton').style.display = 'inline-block'; // Показываем кнопку администрирования для администратора
             }
         }
 
-        // Вызов функции после загрузки страницы
-        window.onload = checkUserRoles;
+        // Функция для очистки поля поиска
+        function clearSearch() {
+            document.getElementById('keyword').value = ''; // Очищаем поле ввода
+            fetchProducts(); // Перезапускаем поиск с пустым запросом
+        }
+
+        // Функция для получения продуктов по ключевому слову
+        async function fetchProducts() {
+            const keyword = document.getElementById('keyword').value;
+            const response = await fetch(`/api/products?keyword=${keyword}`); // Отправляем запрос на сервер с ключевым словом
+            if (response.ok) {
+                const products = await response.json(); // Получаем список продуктов
+                updateProductTable(products); // Обновляем таблицу продуктов
+            }
+        }
+
+        // Функция для обновления таблицы продуктов
+        function updateProductTable(products) {
+            const tableBody = document.getElementById('productTableBody');
+            tableBody.innerHTML = ''; // Очищаем таблицу перед добавлением новых данных
+
+            // Добавляем строки в таблицу для каждого продукта
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <th scope="row">${product.id}</th>
+                    <td>${product.category.name}</td>
+                    <td>${product.name}</td>
+                    <td>${product.manufacturer}</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.price}</td>
+                    <td>${product.deliveryDate}</td>
+                    <td>
+                        <a href="/edit-product/${product.id}"><button type="button" class="btn btn-info">Редактировать</button></a>
+                        <button type="button" class="btn btn-danger" onclick="deleteProduct(${product.id})">Удалить</button>
+                    </td>
+                `;
+                tableBody.appendChild(row); // Добавляем строку в таблицу
+            });
+
+            // Обновляем количество товаров
+            document.getElementById('productCountValue').textContent = products.length;
+        }
+
+        // Функция для удаления товара
+        async function deleteProduct(id) {
+            const response = await fetch(`/api/products/${id}`, {
+                method: 'DELETE', // Метод для удаления
+            });
+            if (response.ok) {
+                fetchProducts(); // Обновляем таблицу после удаления товара
+            } else {
+                alert('Ошибка при удалении товара'); // Ошибка при удалении товара
+            }
+        }
+
+        // Загрузка данных при запуске страницы
+        window.onload = async function() {
+            await checkUserRoles(); // Проверяем роли пользователя
+            await fetchProducts(); // Загружаем продукты при загрузке страницы
+        };
     </script>
 </body>
 </html>
-
-
-
