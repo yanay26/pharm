@@ -193,6 +193,39 @@
             await checkUserRoles(); // Проверяем роли пользователя
             await fetchProducts(); // Загружаем продукты при загрузке страницы
         };
+
+        // Сортировка таблицы
+        document.addEventListener('DOMContentLoaded', function () {
+            const table = document.getElementById('productTable');
+            const headers = table.querySelectorAll('th.sortable');
+            const tbody = table.querySelector('tbody');
+
+            headers.forEach(header => {
+                header.addEventListener('click', () => {
+                    const fieldIndex = Array.from(headers).indexOf(header);
+                    const rows = Array.from(tbody.rows);
+
+                    const isAscending = header.classList.contains('ascending');
+                    header.classList.toggle('ascending', !isAscending);
+                    header.classList.toggle('descending', isAscending);
+
+                    rows.sort((a, b) => {
+                        const aText = a.cells[fieldIndex].textContent.trim();
+                        const bText = b.cells[fieldIndex].textContent.trim();
+
+                        if (isNaN(aText) || isNaN(bText)) {
+                            // Сравнение строк
+                            return isAscending ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                        }
+                        // Сравнение чисел
+                        return isAscending ? aText - bText : bText - aText;
+                    });
+
+                    // Добавляем отсортированные строки обратно в таблицу
+                    rows.forEach(row => tbody.appendChild(row));
+                });
+            });
+        });
     </script>
 </body>
 </html>

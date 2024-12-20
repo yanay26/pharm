@@ -47,6 +47,11 @@ public class UserService {
      */
     @Transactional
     public User registerUser(User user) {
+        // Проверяем, существует ли пользователь с таким email
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Этот email уже используется. Пожалуйста, введите другой.");
+        }
+
         // Шифруем пароль пользователя
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -66,6 +71,7 @@ public class UserService {
         // Сохраняем пользователя с присвоенной ролью
         return userRepository.save(user);
     }
+
 
     /**
      * Найти пользователя по имени пользователя.

@@ -56,6 +56,10 @@
                     <div class="form-group">
                         <label for="email">Почта*</label>
                         <input class="form-control" id="email" name="email" type="email" required />
+                        <!-- Отображаем ошибку, если email уже существует -->
+                        <div th:if="${emailError}" class="alert alert-danger" style="color: red;">
+                            <span th:text="${emailError}"></span>
+                        </div>
                     </div>
 
                     <!-- Кнопка для отправки формы -->

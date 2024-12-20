@@ -103,9 +103,14 @@ public class AppController {
      * @return редирект на страницу логина после успешной регистрации
      */
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") User user) {
-        userService.registerUser(user);
-        return "redirect:/login";
+    public String registerUser(@ModelAttribute("user") User user, Model model) {
+        try {
+            userService.registerUser(user);
+            return "redirect:/login";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("emailError", e.getMessage());
+            return "register";
+        }
     }
 
     /**

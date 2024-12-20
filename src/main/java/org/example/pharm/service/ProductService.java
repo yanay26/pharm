@@ -65,9 +65,11 @@ public class ProductService {
         for (Product product : allProducts) {
             LocalDate deliveryDate = product.getDeliveryDate();
 
-            // Учитываем продукты только за последние 14 дней
+            // Учитываем только те продукты, которые были поставлены за последние 14 дней
             if (deliveryDate != null && !deliveryDate.isBefore(startDate) && !deliveryDate.isAfter(today)) {
-                countMap.put(deliveryDate, countMap.getOrDefault(deliveryDate, 0L) + 1);
+                // Добавляем количество "В наличии" (quantity) к соответствующей дате поставки
+                Long availableCount = (long) product.getQuantity();  // Используем поле quantity
+                countMap.put(deliveryDate, countMap.getOrDefault(deliveryDate, 0L) + availableCount);
             }
         }
 
@@ -82,6 +84,7 @@ public class ProductService {
                         LinkedHashMap::new
                 ));
     }
+
 }
 
 

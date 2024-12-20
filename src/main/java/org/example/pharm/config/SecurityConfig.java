@@ -106,7 +106,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Отключение CSRF для упрощения
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/register", "/login").permitAll() // Страницы входа и регистрации доступны всем
-                        .requestMatchers("/users", "/histogram/data").hasRole("ADMIN") // Доступ к странице /users только для ADMIN
+                        .requestMatchers("/users").hasRole("ADMIN") // Доступ к странице /users только для ADMIN
                         .anyRequest().authenticated() // Остальные страницы требуют аутентификации
                 )
                 .formLogin(form -> form
